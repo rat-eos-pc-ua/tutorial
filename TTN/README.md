@@ -26,16 +26,16 @@ The script performs the following tasks:
 
 2. **Parse and Transform Data**:
     - Parses the fetched data and transforms it into the required data model. The data model that needs to be followed can be seen here: [here]( https://atnog-iot4fire.av.it.pt/swagger-ui/)
-    - Extracts important sensor data fields such as `temperature`, `humidity`,  `co2` or other fields relevant from the decoded payload.
+    - Extract the important sensor data fields.
     - Constructs a structured data model that includes:
         - `dateObserved`: The timestamp of the observation.
-        - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates (retreive the coordinates that are set on TTN for that sensor).
+        - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates (retreive the coordinates that are set on TTN for the sensor).
+        - `source`: A string indicating the source sensor type.
         - `relativeHumidity`: The relative humidity value.
         - `temperature`: The temperature value.
         - `soilTemperature`: The soil temperature value.
         - `soilMoisture`: The soil moisture value in percentage.
         - `electricalConductivity`: Electrical conductivity of the soil in microsiemens per centimeter
-        - `source`: A string indicating the source sensor type.
     - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`)  with the correct credentials the topic "rat-eos-pc"
 
 The method “get_most_recent_data” was made to to send only the most recent values that the sensor has collected: 
