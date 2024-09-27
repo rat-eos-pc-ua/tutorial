@@ -25,12 +25,13 @@ The script performs the following tasks:
         - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates.
         - `relativeHumidity`: The relative humidity value.
         - `temperature`: The temperature value.
-        - `windDirection` and `windSpeed`: Currently set to `None` (can be adjusted based on sensor data).
-        - `co2`: The CO2 value.
+        - `soilTemperature`: The soil temperature value.
+        - `soilMoisture`: The soil moisture value in percentage.
+        - `electricalConductivity`: Electrical conductivity of the soil in microsiemens per centimeter
         - `source`: A string indicating the source sensor type.
     - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`) and the topic "rat-eos-pc"
           
-### Important Notes on Adjusting Sensor Values
+### Important Notes
+It is crucial to adjust the values in the script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
+Proper adherence to this data model is essential for the correct functioning of Kibana visualizations.
 
-It is crucial to adjust the values in the `app.py` script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
-Proper adherence to this data model is essential for the correct functioning of Kibana visualizations. 
