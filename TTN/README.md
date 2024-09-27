@@ -9,6 +9,13 @@ After integrating the sensor, activate the storage integration on the TTN consol
 4. Add the **Storage Integration** to store the sensor data.
    
 
+## Prerequisites(suggestion)
+
+- Docker installed
+- Docker Compose installed
+- Access to a running Kafka cluster
+- A`config.json` file with your Kafka connection details
+
 ### Python Script
 The following Python script available  is an example that fetches sensor data from TTN via the storage integration. Keep in mind that are other integrations available in TTN that can be used.
 The script performs the following tasks:
@@ -25,12 +32,16 @@ The script performs the following tasks:
         - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates.
         - `relativeHumidity`: The relative humidity value.
         - `temperature`: The temperature value.
-        - `windDirection` and `windSpeed`: Currently set to `None` (can be adjusted based on sensor data).
-        - `co2`: The CO2 value.
+        - `soilTemperature`: The soil temperature value.
+        - `soilMoisture`: The soil moisture value in percentage.
+        - `electricalConductivity`: Electrical conductivity of the soil in microsiemens per centimeter
         - `source`: A string indicating the source sensor type.
-    - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`) and the topic "rat-eos-pc"
-          
-### Important Notes on Adjusting Sensor Values
+    - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`)  with the correct credentials the topic "rat-eos-pc"
 
-It is crucial to adjust the values in the `app.py` script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
-Proper adherence to this data model is essential for the correct functioning of Kibana visualizations. 
+The method “get_most_recent_data” was made to to send only the most recent values that the sensor has collected: 
+
+
+### Important Notes
+It is crucial to adjust the values in the script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
+Proper adherence to this data model is essential for the correct functioning of Kibana visualizations.
+
