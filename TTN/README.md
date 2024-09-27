@@ -57,6 +57,7 @@ Navigate to your application dashboard.
 The application name is listed at the top of the dashboard.
 
 3. ACCESS_KEY
+   
 The access key provides the necessary permissions to retrieve data via the API.
 How to Retrieve:
 In the TTN console, select your application.
@@ -64,7 +65,7 @@ Go to the API keys section.
 If you don’t have an existing key, create a new API key with appropriate permissions (e.g., Read data).
 Copy the generated key.
 
-4. TIME_STRING
+5. TIME_STRING
 
 This variable specifies the time range for the data you want to retrieve (e.g., '1h' for the last hour, '7d' for the last week).
 How to Set:
