@@ -9,7 +9,7 @@ After integrating the sensor, activate the storage integration on the TTN consol
 4. Add the **Storage Integration** to store the sensor data.
    
 
-## Prerequisites
+## Prerequisites(suggestion)
 
 - Docker installed
 - Docker Compose installed
