@@ -9,6 +9,13 @@ After integrating the sensor, activate the storage integration on the TTN consol
 4. Add the **Storage Integration** to store the sensor data.
    
 
+## Prerequisites
+
+- Docker installed
+- Docker Compose installed
+- Access to a running Kafka cluster
+- A`config.json` file with your Kafka connection details
+
 ### Python Script
 The following Python script available  is an example that fetches sensor data from TTN via the storage integration. Keep in mind that are other integrations available in TTN that can be used.
 The script performs the following tasks:
