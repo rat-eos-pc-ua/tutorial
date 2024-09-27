@@ -6,9 +6,9 @@ This repository provides a comprehensive guide on integrating new sensors into o
 # Data model:
 The data model that needs to be followed can be seen here: [here]( https://atnog-iot4fire.av.it.pt/swagger-ui/)
 
-## Overview
+# Overview
 
-1. Retrieve data from sensors using the TTN API.
+1. Retrieve data from sensors 
 2. Visualize the data in Kibana.
 
 
