@@ -65,15 +65,18 @@ If you don’t have an existing key, create a new API key with appropriate permi
 Copy the generated key.
 
 4. TIME_STRING
+
 This variable specifies the time range for the data you want to retrieve (e.g., '1h' for the last hour, '7d' for the last week).
 How to Set:
 Determine the time interval relevant to your needs.
 Use shorthand like 24h
 
 5. DATA_TYPE
+
 Type of data to fetch; defaults to uplink_message.
 
 6. DEVICE_ID
+
 Specifies a particular device’s data to fetch; 
 How to Retrieve:
 If you need data from a specific device, navigate to the Devices section in your TTN application click on the device to check his id.
