@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  dragino-soil-storage-integration:
+    build: .
+    volumes:
+      - .:/app
+    networks:
+      - kafka-network
+    restart: unless-stopped  
+
+
+networks:
+  kafka-network:
+    driver: bridge

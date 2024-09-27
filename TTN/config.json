@@ -1,0 +1,7 @@
+{
+    "bootstrap_servers": "atnog-io.iot4fire.av.it.pt:9092",
+    "security_protocol": "SASL_PLAINTEXT",
+    "sasl_mechanisms": "PLAIN",
+    "sasl_username": "username",
+    "sasl_password": "password"
+}
