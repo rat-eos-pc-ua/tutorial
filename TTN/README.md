@@ -36,8 +36,11 @@ The script performs the following tasks:
         - `soilMoisture`: The soil moisture value in percentage.
         - `electricalConductivity`: Electrical conductivity of the soil in microsiemens per centimeter
         - `source`: A string indicating the source sensor type.
-    - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`) and the topic "rat-eos-pc"
-          
+    - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`)  with the correct credentials the topic "rat-eos-pc"
+
+The method “get_most_recent_data” was made to to send only the most recent values that the sensor has collected: 
+
+
 ### Important Notes
 It is crucial to adjust the values in the script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
 Proper adherence to this data model is essential for the correct functioning of Kibana visualizations.
