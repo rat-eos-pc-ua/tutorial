@@ -10,8 +10,7 @@ After integrating the sensor, activate the storage integration on the TTN consol
    
 
 ### Python Script
-The following Python script is an example that fetches sensor data from TTN via the storage API: [here](https://github.com/rat-eos-pc-ua/ingress/blob/main/sensor/app.py)
-
+The following Python script available  is an example that fetches sensor data from TTN via the storage integration. Keep in mind that are other integrations available in TTN that can be used.
 The script performs the following tasks:
 
 1. **Fetch Data from TTN**:
