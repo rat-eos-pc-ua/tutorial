@@ -29,7 +29,7 @@ The script performs the following tasks:
     - Extracts important sensor data fields such as `temperature`, `humidity`,  `co2` or other fields relevant from the decoded payload.
     - Constructs a structured data model that includes:
         - `dateObserved`: The timestamp of the observation.
-        - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates.
+        - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates (retreive the coordinates that are set on TTN for that sensor).
         - `relativeHumidity`: The relative humidity value.
         - `temperature`: The temperature value.
         - `soilTemperature`: The soil temperature value.
