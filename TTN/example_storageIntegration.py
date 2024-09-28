@@ -143,7 +143,7 @@ def transform_to_model(msg, status='working'):
                 status = 'withIncidence'
                 print(f"Field '{field}' is missing in the decoded payload")
 
-        geo_location = "Unknown location"
+        geo_location = None
         for metadata in msg['result']['uplink_message']['rx_metadata']:
             if 'location' in metadata:
                 location_info = metadata['location']
