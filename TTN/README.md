@@ -37,14 +37,9 @@ The script performs the following tasks:
         - `electricalConductivity`: Electrical conductivity of the soil in microsiemens per centimeter
     - Sends the transformed data to the specified Kafka topic using a Kafka producer at the specified address (e.g., `atnog-io.iot4fire.av.it.pt:9092`)  with the correct credentials the topic "rat-eos-pc"
 
-The method “get_most_recent_data” was made to to send only the most recent values that the sensor has collected: 
+The method “get_most_recent_data” was made to to send only the most recent values that the sensor has collected.
 
-
-### Important Notes
-It is crucial to adjust the values in the script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
-Proper adherence to this data model is essential for the correct functioning of Kibana visualizations.
-
-### Configuring Environment Variables
+3. **Configuring Environment Variables**:
 Before running the script, you must configure several environment variables that the script uses to fetch and manage data from The Things Network (TTN). Here’s how to retrieve and set these variables from TTN:
 
 1. APP_NAME
@@ -80,3 +75,12 @@ Type of data to fetch; defaults to uplink_message.
 Specifies a particular device’s data to fetch; 
 How to Retrieve:
 If you need data from a specific device, navigate to the Devices section in your TTN application click on the device to check his id.
+
+4. **Kafka Credentials**:
+Update the json configuration to the correct credentials.
+
+### Important Notes
+It is crucial to adjust the values in the script according to the specific sensors being used. This includes ensuring the correct extraction of sensor measurements and maintaining the structured data model. 
+Proper adherence to this data model is essential for the correct functioning of Kibana visualizations.
+
+
