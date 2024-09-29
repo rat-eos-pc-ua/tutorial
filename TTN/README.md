@@ -14,8 +14,8 @@ For more information you can check: [https://www.thethingsindustries.com/docs/in
 - A`config.json` file with our Kafka connection details
 - Requirements installed
 
-### Python Script
-The following Python script available  is an example that fetches sensor data from TTN via the storage integration. Keep in mind that are other integrations available in TTN that can be used.
+### Python example_storageIntegration.py script
+The following Python script available is an example that fetches sensor data from TTN via the storage integration. Keep in mind that are other integrations available in TTN that can be used.
 The script performs the following tasks:
 
 1. **Fetch Data from TTN**:
@@ -23,9 +23,9 @@ The script performs the following tasks:
     - The data is fetched based on the specified application name, access key, and time string, and can optionally be filtered by device ID. This information is accesible in TTN console. 
 
 2. **Parse and Transform Data**:
-    - Parses the fetched data and transforms it into the required data model. The data model that needs to be followed can be seen here: [here]( https://atnog-iot4fire.av.it.pt/swagger-ui/)
+    - Parses the fetched data and transforms it into the required data model. The data model that needs to be followed can be seen here: [data model]( https://atnog-iot4fire.av.it.pt/swagger-ui/)
     - Extract the important sensor data fields.
-    - Constructs a structured data model that includes:
+    - Constructs a structured data model (based on the one previously shown) that includes:
         - `dateObserved`: The timestamp of the observation.
         - `location`: Information about the sensor's location, including its ID, description, type, and geo-coordinates (retreive the coordinates that are set on TTN for the sensor).
         - `source`: A string indicating the source sensor type.
@@ -44,7 +44,7 @@ It is crucial to adjust the values in the script according to the specific senso
 Proper adherence to this data model is essential for the correct functioning of Kibana visualizations.
 
 ### Configuring Environment Variables
-Before running the script, you must configure several environment variables that the script uses to fetch and manage data from The Things Network (TTN). Here’s how to retrieve and set these variables:
+Before running the script, you must configure several environment variables that the script uses to fetch and manage data from The Things Network (TTN). Here’s how to retrieve and set these variables from TTN:
 
 1. APP_NAME
    
