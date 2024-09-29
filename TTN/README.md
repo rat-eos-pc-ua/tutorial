@@ -77,6 +77,7 @@ Before running the script, you must configure several environment variables that
       If you need data from a specific device, navigate to the Devices section in your TTN application click on the device to check his id.
 
 4. **Kafka Credentials**:
+   
 Update the json configuration to the correct credentials.
 
 ### Important Notes
