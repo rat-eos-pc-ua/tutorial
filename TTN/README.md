@@ -13,7 +13,7 @@ For more information you can check: [https://www.thethingsindustries.com/docs/in
 ## Prerequisites
 - A`config.json` file with our Kafka connection details
 - Requirements installed
-- 
+
 ### Python Script
 The following Python script available  is an example that fetches sensor data from TTN via the storage integration. Keep in mind that are other integrations available in TTN that can be used.
 The script performs the following tasks:
