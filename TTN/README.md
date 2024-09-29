@@ -42,39 +42,39 @@ The method “get_most_recent_data” was made to to send only the most recent v
 3. **Configuring Environment Variables**:
 Before running the script, you must configure several environment variables that the script uses to fetch and manage data from The Things Network (TTN). Here’s how to retrieve and set these variables from TTN:
 
-APP_NAME
-   
-The name of your application as registered in TTN.
-How to Retrieve:
-Go to the TTN console.
-Navigate to your application dashboard.
-The application name is listed at the top of the dashboard.
-
-ACCESS_KEY
-   
-The access key provides the necessary permissions to retrieve data via the API.
-How to Retrieve:
-In the TTN console, select your application.
-Go to the API keys section.
-If you don’t have an existing key, create a new API key with appropriate permissions (e.g., Read data).
-Copy the generated key.
-
-TIME_STRING
-
-This variable specifies the time range for the data you want to retrieve (e.g., '1h' for the last hour, '7d' for the last week).
-How to Set:
-Determine the time interval relevant to your needs.
-Use shorthand like 24h
-
-DATA_TYPE
-
-Type of data to fetch; defaults to uplink_message.
-
-DEVICE_ID
-
-Specifies a particular device’s data to fetch; 
-How to Retrieve:
-If you need data from a specific device, navigate to the Devices section in your TTN application click on the device to check his id.
+      APP_NAME
+         
+      The name of your application as registered in TTN.
+      How to Retrieve:
+      Go to the TTN console.
+      Navigate to your application dashboard.
+      The application name is listed at the top of the dashboard.
+      
+      ACCESS_KEY
+         
+      The access key provides the necessary permissions to retrieve data via the API.
+      How to Retrieve:
+      In the TTN console, select your application.
+      Go to the API keys section.
+      If you don’t have an existing key, create a new API key with appropriate permissions (e.g., Read data).
+      Copy the generated key.
+      
+      TIME_STRING
+      
+      This variable specifies the time range for the data you want to retrieve (e.g., '1h' for the last hour, '7d' for the last week).
+      How to Set:
+      Determine the time interval relevant to your needs.
+      Use shorthand like 24h
+      
+      DATA_TYPE
+      
+      Type of data to fetch; defaults to uplink_message.
+      
+      DEVICE_ID
+      
+      Specifies a particular device’s data to fetch; 
+      How to Retrieve:
+      If you need data from a specific device, navigate to the Devices section in your TTN application click on the device to check his id.
 
 4. **Kafka Credentials**:
 Update the json configuration to the correct credentials.
