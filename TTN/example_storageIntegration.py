@@ -1,7 +1,7 @@
 import base64
 import json
 from datetime import datetime
-from kafka import KafkaProducer
+from confluent_kafka import Producer
 import os
 import time
 import subprocess  
@@ -110,17 +110,21 @@ def getMyDate(timestamp):
     c_Time = c_Date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     return c_Time
 
+# Callback function to check delivery report
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"Message delivery failed: {err}")
+    else:
+        print(f"Message delivered to {msg.topic()} [{msg.partition()}]")
 
 # Function to send data to Kafka
 def send_data(producer, topic, message):
-    producer.produce(topic, value=json.dumps(message))
+    producer.produce(topic, value=json.dumps(message), callback=delivery_report)
     producer.flush()  # Ensure data is sent to Kafka
-    print(f"Sent data to Kafka: {message}")
 
 # Function to process messages and transform to data model
 def transform_to_model(msg, status='working'):
     try:
-        # Check for necessary data structure
         if 'result' not in msg or 'end_device_ids' not in msg['result']:
             print("Message format is incorrect or missing required data")
             return None
@@ -132,11 +136,9 @@ def transform_to_model(msg, status='working'):
 
         device_id = device_info['device_id']
 
-        # Extracting the decoded payload directly
         uplink_message = msg['result'].get('uplink_message', {})
         decoded_payload = uplink_message.get('decoded_payload', {})
 
-        # Check for fields for correct decoding, if any field is missing, set status to 'withIncidence'
         required_fields = ['BatV', 'temp_DS18B20', 'temp_SOIL', 'water_SOIL', 'conduct_SOIL']
         for field in required_fields:
             if field not in decoded_payload:
@@ -150,7 +152,6 @@ def transform_to_model(msg, status='working'):
                 geo_location = f"{location_info['latitude']},{location_info['longitude']}"
                 break
 
-        # Constructing the message with directly extracted data
         message = {
             'id': device_id,
             'dateObserved': getMyDate(msg['result']['received_at']),
@@ -180,7 +181,7 @@ def load_config():
     try:
         with open('config.json', 'r') as f:
             config = json.load(f)
-            print("Config loaded successfully: ", config)  # Debug statement
+            print("Config loaded successfully: ", config)
             return config
     except json.JSONDecodeError as e:
         print(f"Failed to decode JSON: {e}")
@@ -194,23 +195,24 @@ def create_producer(retries=10, wait=30):
     """Attempt to create a Kafka producer with retries """
     for i in range(retries):
         try:
-            producer = KafkaProducer(
-                bootstrap_servers=[config['bootstrap_servers']],
-                value_serializer=lambda x: json.dumps(x).encode('utf-8'),
-                security_protocol=config['security_protocol'],
-                sasl_mechanism=config['sasl_mechanisms'],
-                sasl_plain_username=config['sasl_username'],
-                sasl_plain_password=config['sasl_password'],
-            )
+            producer_conf = {
+                'bootstrap.servers': config['bootstrap_servers'],
+                'security.protocol': config['security_protocol'],
+                'sasl.mechanisms': config['sasl_mechanisms'],
+                'sasl.username': config['sasl_username'],
+                'sasl.password': config['sasl_password'],
+            }
+            producer = Producer(producer_conf)
             return producer
         except Exception as e:
             print(f"Attempt {i+1}/{retries} failed: {e}")
-            time.sleep(wait) # wait 30 seconds before try again
+            time.sleep(wait)
     raise Exception("Failed to create Kafka producer after several attempts")
 
 
 if __name__ == "__main__":
     
+    config = load_config()
     appname = os.getenv('APP_NAME')
     accesskey = os.getenv('ACCESS_KEY')
     timestring = os.getenv('TIME_STRING')
@@ -228,24 +230,18 @@ if __name__ == "__main__":
                 if most_recent_data:
                     transformed_data = transform_to_model(most_recent_data, status='working')
                     print(transformed_data)
-                    producer.send('rat-eos-pc', transformed_data)
-                    producer.flush()
+                    send_data(producer, 'rat-eos-pc', transformed_data)
                     print("Data sent")
                 else:
-                    # If no recent data is found, set status to outOfService
                     print("No recent data found.")
             else:
-                # If no data received at all, set status to outOfService
                 transformed_data = transform_to_model({}, status='outOfService')
                 print("No data received.")
-                producer.send('rat-eos-pc', transformed_data)
-                producer.flush()
+                send_data(producer, 'rat-eos-pc', transformed_data)
 
         except FetchError as fe:
-            # If there is an error in fetching data, treat it as outOfService
             print(f"Fetch error: {fe}")
             transformed_data = transform_to_model({}, status='outOfService')
-            producer.send('rat-eos-pc', transformed_data)
-            producer.flush()
+            send_data(producer, 'rat-eos-pc', transformed_data)
 
         time.sleep(3600)
