@@ -35,8 +35,8 @@ The script performs the following tasks:
 
 ### 2. **Parse and Transform Data**:
 - Parses the fetched data and transforms it into the required data model, as defined [here](https://atnog-iot4fire.av.it.pt/swagger-ui/).
-- Extracts the relevant sensor data fields.
-- Constructs a structured data model (based on the provided schema), which includes:
+- Extracts the relevant sensor data fields(the fields to be collected may differ from sensor to sensor).
+- Constructs a structured data model (based on the provided schema) for this specific case:
   - `dateObserved`: Timestamp of the observation.
   - `location`: Information about the sensor's location, including ID, description, type, and geo-coordinates (retrieved from TTN for the sensor).
   - `source`: Source sensor type.
