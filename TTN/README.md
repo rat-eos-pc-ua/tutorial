@@ -11,7 +11,7 @@ Once integrated, activate the **Storage Integration** in the TTN console:
 3. Go to the **Integrations** section.
 4. Add the **Storage Integration** to store sensor data.
 
-For more information, refer to the [TTN Storage Integration Guide](https://www.thethingsindustries.com/docs/integrations/storage/enable/).
+For more information, check [TTN Storage Integration Guide](https://www.thethingsindustries.com/docs/integrations/storage/enable/).
 
 ---
 
