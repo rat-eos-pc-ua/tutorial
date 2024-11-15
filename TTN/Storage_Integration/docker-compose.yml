@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  storage-integration:
+
+    build: .
+
+    volumes:
+
+      - .:/app
+      
+    env_file:
+      - .env 
+    networks:
+
+      - kafka-network
+
+
+
+networks:
+
+  kafka-network:
+
+    driver: bridge

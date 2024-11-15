@@ -199,10 +199,10 @@ def create_producer(retries=10, wait=30):
         try:
             producer = KafkaProducer(
                 bootstrap_servers=config['bootstrap_servers'],
-                security_protocol=config['security_protocol'],
-                sasl_mechanism=config['sasl_mechanisms'],
-                sasl_plain_username=config['sasl_username'],
-                sasl_plain_password=config['sasl_password'],
+                # security_protocol=config['security_protocol'],
+                # sasl_mechanism=config['sasl_mechanisms'],
+                # sasl_plain_username=config['sasl_username'],
+                # sasl_plain_password=config['sasl_password'],
                 value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             )
             return producer
