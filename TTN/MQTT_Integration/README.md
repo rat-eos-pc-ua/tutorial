@@ -36,7 +36,7 @@ The script performs the following tasks:
 
 ### 2. **Parse and Transform Data**:
 - Parses incoming MQTT messages and extracts sensor fields.
-- Transforms the data into the required data model, as defined [here](https://atnog-iot4fire.av.it.pt/swagger-ui/).
+- Transforms the data into the required data model, as defined [here]([https://atnog-iot4fire.av.it.pt/swagger-ui/](https://www.rateospc.pt/swagger-ui/)).
 - Constructs a structured data model for each observation, including:
   - `dateObserved`: Timestamp of the observation.
   - `location`: Sensor location details such as ID, description, type, and geo-coordinates.
