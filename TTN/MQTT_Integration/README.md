@@ -1,95 +1,91 @@
-# Tutorial: Fetch Sensor Data from TTN Using Storage Integration
+# Tutorial: Fetch Sensor Data from TTN Using MQTT Integration
 
-## Step 1: Retrieve Data from Sensors Using TTN Storage Integration
+## Step 1: Retrieve Data from Sensors Using TTN MQTT Integration
 
-To begin, integrate your sensor with [The Things Network (TTN)](https://www.thethingsnetwork.org/). Ensure that your sensor is properly configured to send data to TTN.
+To start, integrate your sensor with [The Things Network (TTN)](https://www.thethingsnetwork.org/). Make sure that your sensor is configured correctly to send data to TTN.
 
-Once integrated, activate the **Storage Integration** in the TTN console:
+Once the integration is set up, configure the **MQTT Integration** in the TTN console:
 
-1. Navigate to the TTN console.
+1. Log in to the TTN console.
 2. Select your application.
-3. Go to the **Integrations** section.
-4. Add the **Storage Integration** to store sensor data.
+3. Navigate to the **Integrations** section.
+4. Add the **MQTT Integration** to enable MQTT-based data retrieval.
 
-For more information, check [TTN Storage Integration Guide](https://www.thethingsindustries.com/docs/integrations/storage/enable/).
+For detailed instructions, refer to the [TTN MQTT Integration Guide](https://www.thethingsindustries.com/docs/integrations/mqtt/).
 
 ---
 
 ## Prerequisites
 
 - A `config.json` file with Kafka connection details.
-- Requirements installed (e.g., necessary Python packages).
-- TTN credentials for environment variables.
+- Python packages installed (`paho-mqtt`, `kafka-python`, etc.).
+- TTN credentials set up as environment variables.
 
 ---
 
-## Python Script: `example_storageIntegration.py`
+## Python Script: `example_mqttIntegration.py`
 
-The provided Python script fetches sensor data from TTN via the **Storage Integration**. Note that TTN offers other integrations which can also be used.
+The provided Python script connects to the TTN MQTT broker to fetch sensor data. Note that TTN offers other integrations, but this example uses MQTT.
 
 The script performs the following tasks:
 
-### 1. **Fetch Data from TTN**:
-- Uses the `curl` command to retrieve data from the TTN storage API.
-- The data is fetched based on the specified application name, access key, and time range, and can optionally be filtered by device ID (this information is available in the TTN console).
+### 1. **Connect to TTN via MQTT**:
+- Uses the `paho.mqtt.client` library to establish a connection with the TTN MQTT broker.
+- The MQTT broker URL, port, application name, and access key are specified.
+- Subscribes to MQTT topics to receive sensor data (filtered by application and device ID).
 
 ### 2. **Parse and Transform Data**:
-- Parses the fetched data and transforms it into the required data model, as defined [here](https://atnog-iot4fire.av.it.pt/swagger-ui/).
-- Extracts the relevant sensor data fields(the fields to be collected may differ from sensor to sensor).
-- Constructs a structured data model (based on the provided schema) for this specific case:
+- Parses incoming MQTT messages and extracts sensor fields.
+- Transforms the data into the required data model, as defined [here](https://atnog-iot4fire.av.it.pt/swagger-ui/).
+- Constructs a structured data model for each observation, including:
   - `dateObserved`: Timestamp of the observation.
-  - `location`: Information about the sensor's location, including ID, description, type, and geo-coordinates (retrieved from TTN for the sensor).
+  - `location`: Sensor location details such as ID, description, type, and geo-coordinates.
   - `source`: Source sensor type.
-  - `relativeHumidity`: Relative humidity value.
-  - `temperature`: Temperature value.
+  - `relativeHumidity`: Relative humidity percentage.
+  - `temperature`: Ambient temperature in Celsius.
   - `soilTemperature`: Soil temperature value.
-  - `soilMoisture`: Soil moisture percentage.
-  - `electricalConductivity`: Electrical conductivity of the soil in microsiemens per centimeter.
+  - `soilMoisture`: Soil moisture level.
+  - `electricalConductivity`: Soil electrical conductivity in microsiemens per centimeter.
   
-- Sends the transformed data to the specified Kafka topic using a Kafka producer (e.g., `atnog-io.iot4fire.av.it.pt:9092`) and the correct credentials for the topic `rat-eos-pc`.
+- Publishes the transformed data to a specified Kafka topic using a Kafka producer (e.g., `atnog-io.iot4fire.av.it.pt:9092`) and sends it to the topic `rat-eos-pc`.
 
-The `get_most_recent_data` method ensures that only the most recent sensor data is sent.
+The `on_message` callback method processes each MQTT message and sends only the latest sensor data.
 
 ---
 
 ## Configuring Environment Variables
 
-Before running the script, you must configure several environment variables to fetch and manage data from TTN. Here’s how to retrieve and set these variables:
+Before running the script, you need to set up several environment variables to connect to the TTN MQTT broker and manage data flow. Here's a list of required variables:
 
 - **APP_NAME**
-  - **Description**: The name of your application as registered in TTN.
-  - **How to Retrieve**: Navigate to the TTN console and check the application dashboard; the application name is listed at the top.
+  - **Description**: Your application name as registered in TTN.
+  - **How to Retrieve**: Log in to the TTN console and find your application dashboard.
 
 - **ACCESS_KEY**
-  - **Description**: The access key provides the necessary permissions to retrieve data via the API.
+  - **Description**: An MQTT access key allowing access to your application data.
   - **How to Retrieve**: 
-    - In the TTN console, select your application.
+    - Navigate to your application in the TTN console.
     - Go to the **API Keys** section.
-    - Create a new API key (if necessary) with appropriate permissions (e.g., `Read data`), then copy the generated key.
+    - Create or use an existing key with `Read` permissions and copy the access key.
 
-- **TIME_STRING**
-  - **Description**: This variable specifies the time range for the data you want to retrieve (e.g., '1h' for the last hour, '7d' for the last week).
-  - **How to Set**: Use shorthand like `24h` for the last 24 hours or `30d` for the last 30 days.
+- **MQTT_BROKER**
+  - **Description**: The MQTT broker URL for TTN (default is `eu1.cloud.thethings.network`).
+  - **How to Set**: Use the regional TTN broker (e.g., `eu1.cloud.thethings.network`).
 
-- **DATA_TYPE**
-  - **Description**: The type of data to fetch. Defaults to `uplink_message`.
-  - **How to Set**: Leave as `uplink_message` or set another data type if required.
+- **MQTT_PORT**
+  - **Description**: The port for MQTT communication (usually `1883` for non-secure and `8883` for secure connections).
+  - **How to Set**: Typically set to `1883` or `8883`.
 
 - **DEVICE_ID**
-  - **Description**: Specifies a particular device’s data to fetch.
+  - **Description**: Specific device ID for which data will be fetched.
   - **How to Retrieve**: 
-    - In the TTN console, navigate to the **Devices** section of your application.
-    - Select the device to view its `device_id`.
+    - In the TTN console, go to **Devices** under your application.
+    - Select a device to find its `device_id`.
 
 ---
 
 ## Kafka Credentials
 
-Ensure that the `config.json` file contains the correct Kafka credentials and configuration. Update the following fields with the values given to you.
+Ensure that your `config.json` file is populated with the correct Kafka credentials and configuration. This file should include fields such as:
 
----
 
-## Important Notes
-
-- Adjust the script according to the specific sensors being used. Ensure that the correct sensor measurements are extracted and that the structured data model is followed accurately.
-- Proper adherence to the data model is crucial for the correct functioning of Kibana visualizations.
