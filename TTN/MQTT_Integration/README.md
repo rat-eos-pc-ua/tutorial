@@ -47,7 +47,7 @@ The script performs the following tasks:
   - `soilMoisture`: Soil moisture level.
   - `electricalConductivity`: Soil electrical conductivity in microsiemens per centimeter.
   
-- Publishes the transformed data to a specified Kafka topic using a Kafka producer (e.g., `atnog-io.iot4fire.av.it.pt:9092`) and sends it to the topic `rat-eos-pc`.
+- Publishes the transformed data to a specified Kafka topic using a Kafka producer (e.g., `io.rateospc.pt:9092`) and sends it to the topic `rat-eos-pc`.
 
 The `on_message` callback method processes each MQTT message and sends only the latest sensor data.
 
