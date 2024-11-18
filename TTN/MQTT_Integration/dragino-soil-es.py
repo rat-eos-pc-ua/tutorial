@@ -4,6 +4,7 @@ from kafka import KafkaProducer
 import paho.mqtt.client as mqtt
 import os
 import time
+import csv
 
 # Retrieve configurations from environment variables
 APP_NAME = os.getenv('USERNAME')
@@ -45,13 +46,27 @@ def on_message(client, userdata, msg):
     except Exception as e:
         print(f"Error processing message: {e}")
 
+
+def load_devices_from_csv(csv_file):
+    devices = []
+    with open(csv_file, mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            devices.append({
+                'device_id': row['Device ID'],
+                'latitude': float(row['Latitude']),
+                'longitude': float(row['Longitude'])
+            })
+    return devices
+
+
 # Function to process messages and transform to data model
-def transform_to_model(msg):
+def transform_to_model(msg,device_info):
     try:
         print(msg)
         if not msg:
             observation_data = {
-                "id": "dragino-soil-es",
+                "id": device_info['Device ID'],
                 "dateObserved": datetime.now().isoformat(),
                 "status": 'outOfService',
                 "source": "Dragino_soil"
@@ -88,12 +103,8 @@ def transform_to_model(msg):
         status = 'working' if all(v not in [None, 0] for v in 
                                    [temperature, battery_voltage, soil_temperature, soil_moisture, electrical_conductivity]) else 'withIncidence'
 
-        geo_location = None # Default value if no location is found
-        for metadata in uplink_message.get('rx_metadata', []):
-            if 'location' in metadata:
-                location_info = metadata['location']
-                geo_location = f"{location_info['latitude']},{location_info['longitude']}"
-                break
+        geo_location = f"{device_info['latitude']},{device_info['longitude']}"
+
 
         # Constructing the message with directly extracted data
         message = {
@@ -102,7 +113,6 @@ def transform_to_model(msg):
             'source': 'Dragino_soil',
             'status': [status],  
             'dcPowerInput': battery_voltage,  
-            'temperature': temperature,
             'soilTemperature': soil_temperature,
             'soilMoisture': soil_moisture,
             'electricalConductivity': electrical_conductivity,
@@ -127,7 +137,7 @@ def transform_to_model(msg):
     return None
 
 def load_config():
-    with open('json_config/config.json', 'r') as f:
+    with open('config.json', 'r') as f:
         return json.load(f)
 
 def create_kafka_producer(retries=10, wait=30):
@@ -149,18 +159,47 @@ def create_kafka_producer(retries=10, wait=30):
     raise Exception("Failed to create Kafka producer after several attempts")
 
 if __name__ == "__main__":
-    
     print("Script Started")
+
+    # Load device configurations from the CSV file
+    devices = load_devices_from_csv('sensor_dragino_soil.csv')
     
     kafka_producer = create_kafka_producer()
     print("Kafka producer created")
     
     mqtt_client = mqtt.Client()
     mqtt_client.username_pw_set("rat-eos-pc-1@ttn", ACCESS_KEY)
-    mqtt_client.on_connect = on_connect
-    mqtt_client.on_message = on_message
     
-    print(f"Connecting to MQTT broker at {MQTT_BROKER}:{MQTT_PORT}...")
-    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    # Define on_message callback to handle device-specific transformation
+    def on_message_wrapper(device_info):
+        def on_message(client, userdata, msg):
+            try:
+                message_payload = json.loads(msg.payload.decode())
+                if not message_payload:
+                    print("Received empty message payload.")
+                    return
+                print(message_payload)
+                
+                # Pass device_info to transformation function
+                transformed_data = transform_to_model(message_payload, device_info)
+
+                kafka_producer.send(KAFKA_TOPIC, transformed_data)
+                kafka_producer.flush()
+                print(f"Data sent to Kafka for device {device_info['device_id']}")
+                
+            except Exception as e:
+                print(f"Error processing message for {device_info['device_id']}: {e}")
+        return on_message
+
+    # Loop through each device from CSV and set up MQTT client
+    for device in devices:
+        DEVICE_ID = device['device_id']
+        MQTT_TOPIC = f"v3/{APP_NAME}/devices/{DEVICE_ID}/up"
+
+        mqtt_client.on_connect = on_connect
+        mqtt_client.message_callback_add(MQTT_TOPIC, on_message_wrapper(device))
+        
+        print(f"Connecting to MQTT broker at {MQTT_BROKER}:{MQTT_PORT} for device {DEVICE_ID}...")
+        mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
     
     mqtt_client.loop_forever()
