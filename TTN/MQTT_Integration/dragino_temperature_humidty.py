@@ -33,7 +33,8 @@ def load_devices_from_csv(csv_file):
             devices.append({
                 'device_id': row['Device ID'],
                 'latitude': float(row['Latitude']),
-                'longitude': float(row['Longitude'])
+                'longitude': float(row['Longitude']),
+                'location': row['location']
             })
     return devices
 
@@ -100,7 +101,7 @@ def transform_to_model(msg, device_info):
             "location": {
                 "type": "Point",
                 "coordinates": geo_location,
-                "description": 'Aveiro'
+                "description": device_info['location']
             },
         }
         
