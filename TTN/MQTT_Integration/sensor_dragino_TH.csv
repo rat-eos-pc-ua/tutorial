@@ -1,2 +1,2 @@
-Device ID,Latitude,Longitude, location
-dragino-temperature-humidity-es,40.63414843114737,-8.659944613651072, Aveiro
+id;dev_eui;join_eui;name;frequency_plan_id;lorawan_version;lorawan_phy_version;app_key;Latitude;Longitude;location;
+dragino-temperature-humidity-es;2CF7F1C061600020;825D904ED3761C46;dragino-temperature humidity 1;EU_863_870_TTN;MAC_V1_0_3;RP001_V1_0_3_REV_A;2146925DA79DE35ADE29508C6B7BC374;40.63414843114737;-8.659944613651072;Aveiro;

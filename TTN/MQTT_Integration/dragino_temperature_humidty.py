@@ -22,19 +22,16 @@ MQTT_PORT = int(os.getenv('MQTT_PORT', 1883))
 # Kafka configurations
 KAFKA_TOPIC = 'rat-eos-pc'
 
-# Topic for MQTT subscription based on provided format
-MQTT_TOPIC = f"v3/{APP_NAME}/devices/{DEVICE_ID}/up"
-
 def load_devices_from_csv(csv_file):
     devices = []
     with open(csv_file, mode='r') as file:
-        csv_reader = csv.DictReader(file)
+        csv_reader = csv.DictReader(file, delimiter=';')  # Specify the semicolon delimiter
         for row in csv_reader:
             devices.append({
-                'device_id': row['Device ID'],
-                'latitude': float(row['Latitude']),
-                'longitude': float(row['Longitude']),
-                'location': row['location']
+                'device_id': row['id'],
+                'latitude': float(row['Latitude'].replace(',', '.')),  # Convert to float, replacing commas with dots
+                'longitude': float(row['Longitude'].replace(',', '.')),  # Convert to float, replacing commas with dots
+                'location': row['location']  # Match this with the CSV header
             })
     return devices
 
@@ -42,8 +39,10 @@ def load_devices_from_csv(csv_file):
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connected to MQTT broker successfully")
-        client.subscribe(MQTT_TOPIC)  # Subscribing to the specified topic
-        print(f"Subscribed to topic: {MQTT_TOPIC}")
+        for device in devices:
+            mqtt_topic = f"v3/{APP_NAME}/devices/{device['device_id']}/up"
+            client.subscribe(mqtt_topic)  # Subscribing to the device topic dynamically
+            print(f"Subscribed to topic: {mqtt_topic}")
     else:
         print(f"Failed to connect, return code {rc}")
         if rc == 5:
@@ -52,7 +51,13 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     try:
         message_payload = json.loads(msg.payload.decode())
-        transformed_data = transform_to_model(message_payload)  
+        device_info = next((d for d in devices if f"v3/{APP_NAME}/devices/{d['device_id']}/up" == msg.topic), None)
+        
+        if not device_info:
+            print("Received message from unknown device.")
+            return
+        
+        transformed_data = transform_to_model(message_payload, device_info)  
         print("Transformed data:", transformed_data)
 
         kafka_producer.send(KAFKA_TOPIC, transformed_data)
@@ -66,7 +71,7 @@ def transform_to_model(msg, device_info):
     try:
         if not msg:
             observation_data = {
-                "id": device_info['Device ID'],
+                "id": device_info['device_id'],
                 "dateObserved": datetime.now().isoformat(),
                 "status": "outOfService",
                 "source": "Dragino_Temperature_Humidity"
@@ -87,7 +92,6 @@ def transform_to_model(msg, device_info):
             status = 'withIncidence'
 
         geo_location = f"{device_info['latitude']},{device_info['longitude']}"
-
 
         # Build the transformed message using extracted data
         message = {
@@ -114,7 +118,7 @@ def transform_to_model(msg, device_info):
 
 # Function to load configuration from a JSON file
 def load_config():
-    with open('config.json', 'r') as f:
+    with open('json_config/config.json', 'r') as f:
         return json.load(f)
 
 def create_kafka_producer(retries=10, wait=30):
@@ -136,7 +140,6 @@ def create_kafka_producer(retries=10, wait=30):
     raise Exception("Failed to create Kafka producer after several attempts")
 
 
-
 if __name__ == "__main__":
     print("Script Started")
 
@@ -149,36 +152,10 @@ if __name__ == "__main__":
     mqtt_client = mqtt.Client()
     mqtt_client.username_pw_set("rat-eos-pc-1@ttn", ACCESS_KEY)
     
-    # Define on_message callback to handle device-specific transformation
-    def on_message_wrapper(device_info):
-        def on_message(client, userdata, msg):
-            try:
-                message_payload = json.loads(msg.payload.decode())
-                if not message_payload:
-                    print("Received empty message payload.")
-                    return
-                print(message_payload)
-                
-                # Pass device_info to transformation function
-                transformed_data = transform_to_model(message_payload, device_info)
-
-                kafka_producer.send(KAFKA_TOPIC, transformed_data)
-                kafka_producer.flush()
-                print(f"Data sent to Kafka for device {device_info['device_id']}")
-                
-            except Exception as e:
-                print(f"Error processing message for {device_info['device_id']}: {e}")
-        return on_message
-
-    # Loop through each device from CSV and set up MQTT client
-    for device in devices:
-        DEVICE_ID = device['device_id']
-        MQTT_TOPIC = f"v3/{APP_NAME}/devices/{DEVICE_ID}/up"
-
-        mqtt_client.on_connect = on_connect
-        mqtt_client.message_callback_add(MQTT_TOPIC, on_message_wrapper(device))
-        
-        print(f"Connecting to MQTT broker at {MQTT_BROKER}:{MQTT_PORT} for device {DEVICE_ID}...")
-        mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    mqtt_client.on_connect = on_connect
+    mqtt_client.on_message = on_message  # Global message handler for all devices
     
+    print(f"Connecting to MQTT broker at {MQTT_BROKER}:{MQTT_PORT}...")
+    mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
+
     mqtt_client.loop_forever()
