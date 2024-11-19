@@ -1,7 +1,0 @@
-{
-    "bootstrap_servers": "kafka:29092",
-    "security_protocol": "SASL_PLAINTEXT",
-    "sasl_mechanisms": "PLAIN",
-    "sasl_username": "rat_eos_pc",
-    "sasl_password": "5e961dc4-be98-4788-82a6-f353147c67b"
-}

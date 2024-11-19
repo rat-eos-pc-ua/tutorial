@@ -1,8 +1,0 @@
-python-dateutil
-datetime
-kafka-python
-paho-mqtt==1.6.1
-ttn
-protobuf==3.20.1
-confluent_kafka
-

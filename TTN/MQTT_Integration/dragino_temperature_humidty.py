@@ -25,13 +25,13 @@ KAFKA_TOPIC = 'rat-eos-pc'
 def load_devices_from_csv(csv_file):
     devices = []
     with open(csv_file, mode='r') as file:
-        csv_reader = csv.DictReader(file, delimiter=';')  # Specify the semicolon delimiter
+        csv_reader = csv.DictReader(file, delimiter=';') 
         for row in csv_reader:
             devices.append({
                 'device_id': row['id'],
-                'latitude': float(row['Latitude'].replace(',', '.')),  # Convert to float, replacing commas with dots
-                'longitude': float(row['Longitude'].replace(',', '.')),  # Convert to float, replacing commas with dots
-                'location': row['location']  # Match this with the CSV header
+                'latitude': float(row['Latitude'].replace(',', '.')),  
+                'longitude': float(row['Longitude'].replace(',', '.')),  
+                'location': row['location']  
             })
     return devices
 
