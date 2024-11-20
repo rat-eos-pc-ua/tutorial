@@ -118,7 +118,7 @@ def transform_to_model(msg, device_info):
 
 # Function to load configuration from a JSON file
 def load_config():
-    with open('json_config/config.json', 'r') as f:
+    with open('config.json', 'r') as f:
         return json.load(f)
 
 def create_kafka_producer(retries=10, wait=30):

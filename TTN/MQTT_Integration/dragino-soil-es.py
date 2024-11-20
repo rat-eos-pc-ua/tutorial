@@ -83,7 +83,7 @@ def transform_to_model(msg, device_info):
         electrical_conductivity = float(decoded_payload.get('conduct_SOIL', None))
 
         # Determine the status based on the availability of the data fields
-        if all(v not in [None, 0] for v in [temperature, battery_voltage, soil_temperature, soil_moisture, electrical_conductivity]):
+        if all(v not in [None, 0] for v in [battery_voltage, soil_temperature, soil_moisture, electrical_conductivity]):
             status = 'working'
         else:
             status = 'withIncidence'
@@ -116,7 +116,7 @@ def transform_to_model(msg, device_info):
 
 # Function to load configuration from a JSON file
 def load_config():
-    with open('json_config/config.json', 'r') as f:
+    with open('config.json', 'r') as f:
         return json.load(f)
 
 def create_kafka_producer(retries=10, wait=30):
