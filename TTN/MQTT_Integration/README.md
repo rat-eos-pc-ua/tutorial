@@ -86,6 +86,6 @@ Before running the script, you need to set up several environment variables to c
 
 ## Kafka Credentials
 
-Ensure that your `config.json` file is populated with the correct Kafka credentials and configuration. This file should include fields such as:
+Ensure that your `config.json` file is populated with the correct Kafka credentials and configuration. 
 
 
